@@ -1,70 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model with MTL</title>
+    <title>Three.js Example</title>
     <style>
         body {
             margin: 0;
         }
-
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 2rem;
-        }
     </style>
 </head>
 <body>
-    <div id="loading-screen">Loading model...</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r138/three.min.js"></script>
     <script>
-        const container = document.getElementById('loading-screen');
-
+        // Scene
         const scene = new THREE.Scene();
+
+        // Camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        camera.position.z = 5;
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        const loader = new THREE.OBJLoader();
-        loader.loadMTLLoader = function (url) {
-            return new THREE.MTLLoader().setPath(url.substring(0, url.lastIndexOf("/") + 1)).load(url);
-        };
+        // Cube Geometry
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
 
-        loader.load('model.obj', 'model.mtl', function (object) {
-            object.traverse(function (child) {
-                if (child instanceof THREE.Mesh) {
-                    child.material.side = THREE.DoubleSide; // Display both sides of the model
-                }
-            });
-            scene.add(object);
-
-            // Remove loading screen after model loads
-            container.style.display = 'none';
-
-            animate();
-        });
-
-        camera.position.z = 5;
-
+        // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
 
-            // Rotate the model (optional)
-            object.rotation.y += 0.01;
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
 
             renderer.render(scene, camera);
         }
+
+        animate();
     </script>
 </body>
 </html>
